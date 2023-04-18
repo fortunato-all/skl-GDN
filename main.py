@@ -21,7 +21,7 @@ logging.info(timestamp)
 # Main #
 ################################################################################
 
-# 设置随机数种子
+
 def set_random_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -88,7 +88,7 @@ def multi_run_main(config):
 ################################################################################
 # ArgParse and Helper Functions #
 ################################################################################
-def get_config(config_path="config.yml"):
+def get_config(config_path="config/gdn_yelpchi.yml"):
     with open(config_path, "r") as setting:
         config = yaml.load(setting, Loader=yaml.FullLoader)
     return config
@@ -154,12 +154,7 @@ def grid(kwargs):
 # Module Command-line Behavior #
 ################################################################################
 if __name__ == '__main__':
-    # cfg = get_args()
-    # config = get_config(cfg['config'])
-    config = get_config('wsdm_GDN/config/gdn_yelpchi.yml')
+    config = get_config('config/gdn_yelpchi.yml')
     args = argparse.Namespace(**config)
     os.environ["CUDA_VISIBLE_DEVICES"] = args.cuda_id
-    # if cfg['multi_run']:
-    #     multi_run_main(config)
-    # else:
     main(config)

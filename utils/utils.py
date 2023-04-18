@@ -9,29 +9,31 @@ from collections import defaultdict
 import logging
 from dgl.data.utils import load_graphs, save_graphs
 import dgl
+import os.path as osp
+import torch
 
 logging.basicConfig(filename='result.log', level=logging.INFO)
 """
 	Utility functions to handle data and evaluate model.
 """
 
-def biased_split(dataset): #******************这个没有改tfinance*************************
+def biased_split(dataset):
 	prefix = '/data'
 	if dataset == 'yelp':
 		data_name = 'YelpChi.mat'  # 'Amazon.mat' or 'YelpChi.mat'
 	elif dataset == 'amazon':
 		data_name = 'Amazon.mat'
-	data = loadmat(prefix + data_name) #load MATLAB file
+	data = loadmat(prefix + data_name)
 
 	if data_name == 'YelpChi.mat':
-		net_list = [data['net_rur'].nonzero(), data['net_rtr'].nonzero(), #输入数据中的邻接矩阵，返回非零元素的索引值数组
+		net_list = [data['net_rur'].nonzero(), data['net_rtr'].nonzero(),
 					data['net_rsr'].nonzero(), data['homo'].nonzero()]
 	else:  # amazon dataset
 		net_list = [data['net_upu'].nonzero(), data['net_usu'].nonzero(),
 					data['net_uvu'].nonzero(), data['homo'].nonzero()]
 
 	label = data['label'][0]
-	pos_nodes = set(label.nonzero()[0].tolist()) #标签转列表
+	pos_nodes = set(label.nonzero()[0].tolist())
 
 	pos_node_dict, neg_node_dict = defaultdict(lambda: [0, 0]), defaultdict(lambda: [0, 0])
 	# extract the edges of positive nodes in each relation graph
@@ -72,16 +74,17 @@ def biased_split(dataset): #******************这个没有改tfinance***********
 	y_test = np.array(label[idx_test])
 	return idx_train, idx_test, y_train, y_test
 	
-def load_data(data, prefix='wsdm_GDN/data/'):
+def load_data(data, prefix='/data'):
 	"""
 	Load graph, feature, and label given dataset name
-	:returns: home and single-relation graphs, feature, label加载数据********
+	:returns: home and single-relation graphs, feature, label
 	"""
+
 	if data == 'yelp':
 		data_file = loadmat(prefix + 'YelpChi.mat')
-		labels = data_file['label'].flatten() #返回一维数组
-		feat_data = data_file['features'].todense().A #稀疏矩阵转稠密矩阵
-		# load the preprocessed adj_lists 加载预处理后的邻接列表
+		labels = data_file['label'].flatten()
+		feat_data = data_file['features'].todense().A
+		# load the preprocessed adj_lists
 		with open(prefix + 'yelp_homo_adjlists.pickle', 'rb') as file:
 			homo = pickle.load(file)
 		file.close()
@@ -111,21 +114,30 @@ def load_data(data, prefix='wsdm_GDN/data/'):
 		file.close()
 		with open(prefix + 'amz_uvu_adjlists.pickle', 'rb') as file:
 			relation3 = pickle.load(file)
+		file.close()
 		return [homo, relation1, relation2, relation3], feat_data, labels
-	else:
-		data_file,label_dict = load_graphs('wsdm_GDN/data/tfinance') #用两个变量来取data_file
+	elif data == 'tfinance': 
+		data_file,label_dict = load_graphs('data/tfinance') 
 		data_file = data_file[0]
-		labels = data_file.ndata['label'].argmax(1).numpy() #2维转1维，求每行最大  tensor类型加。numpy()转和amazon一样的ndarray
-		feat_data = data_file.ndata['feature'].numpy() #不加numpy的话就是torch.size(35954,10)，加上numpy就是ndarray
-		with open('wsdm_GDN/data/tfinance.pickle', 'rb') as file:
+		labels = data_file.ndata['label'].argmax(1).numpy() 
+		feat_data = data_file.ndata['feature'].numpy() 
+		with open('data/tfinance.pickle', 'rb') as file:
+			homo = pickle.load(file)
+		file.close()
+		return [homo], feat_data, labels
+	else:
+		data_file,label_dict = load_graphs('/data/tsocial') 
+		data_file = data_file[0]
+		labels = data_file.ndata['label'].numpy() 
+		feat_data = data_file.ndata['feature'].numpy() 
+		with open('data/tsocial.pickle', 'rb') as file:
 			homo = pickle.load(file)
 		file.close()
 		return [homo], feat_data, labels
 
-
 def normalize(mx):
 	"""
-		Row-normalize sparse matrix行归一化稀疏矩阵
+		Row-normalize sparse matrix
 		Code from https://github.com/williamleif/graphsage-simple/
 	"""
 	rowsum = np.array(mx.sum(1)) + 0.01
@@ -138,20 +150,18 @@ def normalize(mx):
 
 def sparse_to_adjlist(sp_matrix, filename):
 	"""
-	Transfer sparse matrix to adjacency list 稀疏矩阵转邻接链表
+	Transfer sparse matrix to adjacency list
 	:param sp_matrix: the sparse matrix
 	:param filename: the filename of adjlist
 	"""
-	# add self loop加入自循环
+	# add self loop
 	homo_adj = sp_matrix + sp.eye(sp_matrix.shape[0])
-	# create adj_list 初始化邻接列表
+	# create adj_list
 	adj_lists = defaultdict(set)
 	edges = homo_adj.nonzero()
-	# 根据邻接矩阵计算邻接列表
 	for index, node in enumerate(edges[0]):
 		adj_lists[node].add(edges[1][index])
 		adj_lists[edges[1][index]].add(node)
-	# 存储邻接列表
 	with open(filename, 'wb') as file:
 		pickle.dump(adj_lists, file)
 	file.close()
@@ -159,11 +169,10 @@ def sparse_to_adjlist(sp_matrix, filename):
 
 def pos_neg_split(nodes, labels):
 	"""
-	将数据集按照类别的正负分开
 	Find positive and negative nodes given a list of nodes and their labels
 	:param nodes: a list of nodes
 	:param labels: a list of node labels
-	:returns: the spited positive and negative nodes 区分正负节点
+	:returns: the spited positive and negative nodes
 	"""
 	pos_nodes = []
 	neg_nodes = cp.deepcopy(nodes)
@@ -178,7 +187,7 @@ def pos_neg_split(nodes, labels):
 
 def test_sage(test_cases, labels, model, batch_size, thres=0.5, save=False):
 	"""
-	Test the performance of GraphSAGE设计评估指标和评估函数
+	Test the performance of GraphSAGE
 	:param test_cases: a list of testing node
 	:param labels: a list of testing node labels
 	:param model: the GNN model
@@ -188,7 +197,6 @@ def test_sage(test_cases, labels, model, batch_size, thres=0.5, save=False):
 	test_batch_num = int(len(test_cases) / batch_size) + 1
 	gnn_pred_list = []
 	gnn_prob_list = []
-	# 对每一个测试batch进行遍历
 	for iteration in range(test_batch_num):
 		i_start = iteration * batch_size
 		i_end = min((iteration + 1) * batch_size, len(test_cases))
@@ -202,7 +210,6 @@ def test_sage(test_cases, labels, model, batch_size, thres=0.5, save=False):
 		gnn_prob_list.extend(gnn_prob_arr.tolist())
 
 	auc_gnn = roc_auc_score(labels, np.array(gnn_prob_list))
-	# 计算F1-macro分数
 	f1_macro_gnn = f1_score(labels, np.array(gnn_pred_list), average='macro')
 	conf_gnn = confusion_matrix(labels, np.array(gnn_pred_list))
 	tn, fp, fn, tp = conf_gnn.ravel()

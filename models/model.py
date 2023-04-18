@@ -30,8 +30,8 @@ class GDNLayer(nn.Module):
 
 
 	def forward(self, nodes, labels):
-		embeds1 = self.inter1(nodes, labels) #进inter
-		scores = self.weight.mm(embeds1) #一个隐藏层的嵌入，乘该层的weight
+		embeds1 = self.inter1(nodes, labels)
+		scores = self.weight.mm(embeds1)
 		return scores.t()
 
 	def to_prob(self, nodes, labels):

@@ -1,6 +1,5 @@
 # Data
-data_name: 'tfinance'
-#amazon tfinance
+data_name: 'yelp'
 data_dir: 'data/'
 train_ratio: 0.6
 test_ratio: 0.33
@@ -31,12 +30,11 @@ seed: 42
 optimizer: 'adam'
 lr_1: 0.001
 lr_2: 0.00001
-# lr_2: 0.000001
 weight_decay: 0.001
 weight_decay_2: 0.1
 batch_size: 1024
 test_batch_size: 1024
-num_epochs: 200
+num_epochs: 301
 valid_epochs: 5
 
 add_constraint: True
@@ -53,5 +51,5 @@ topk: 10
     # - 24
 biased_split: False
 # Device
-no_cuda: False
-cuda_id: '7'
+no_cuda: True
+cuda_id: '2'
