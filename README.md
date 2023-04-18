@@ -19,7 +19,6 @@ YelpChi and Amazon can be downloaded from [here](https://github.com/YingtongDou/
 
 Run `python src/data_process.py` to pre-process the data.
 Run `python src/attack.py` to attack the test set of Amazon or Yelp.
-model_handler.py and layers.py are for Yelp and Amazon, while model_handler_homo.py and layers_homo.py are for T-Finance and T-Social.
 
 # Dependencies
 Please set up the environment following Requirements in this [repository](https://github.com/PonderLY/PC-GNN). 
@@ -37,6 +36,7 @@ deeprobust        0.2.4
 ```sh
 python main.py --config ./config/gdn_yelpchi.yml
 ```
+model_handler.py and layers.py are for Yelp and Amazon, while model_handler_homo.py and layers_homo.py are for T-Finance and T-Social.
 
 # Acknowledgement
 Our code references:
