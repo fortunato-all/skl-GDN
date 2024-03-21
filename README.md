@@ -15,7 +15,7 @@ In this work, we further investigates the causes of SDS and discover that graph 
 Visualization of SDS under different perturb ratio of graph adversarial attack.
 
 # Dataset
-YelpChi and Amazon can be downloaded from [here](https://github.com/YingtongDou/CARE-GNN/tree/master/data) or [dgl.data.FraudDataset](https://docs.dgl.ai/api/python/dgl.data.html#fraud-dataset). T-Finance and T-Social can be downloaded from [here](https://drive.google.com/drive/folders/1PpNwvZx_YRSCDiHaBUmRIS3x1rZR7fMr?usp=sharing), Download and unzip all files in the `dataset` folder.
+YelpChi and Amazon can be downloaded from [here](https://github.com/YingtongDou/CARE-GNN/tree/master/data) or [dgl.data.FraudDataset](https://docs.dgl.ai/api/python/dgl.data.html#fraud-dataset). T-Finance and T-Social can be downloaded from [here](https://drive.google.com/drive/folders/1PpNwvZx_YRSCDiHaBUmRIS3x1rZR7fMr?usp=sharing). Download and unzip all files in the `dataset` folder.
 
 Run `python utils/data_process.py` to pre-process the data.
 Run `python utils/attack.py` to attack the test set of Amazon or Yelp.
@@ -43,3 +43,6 @@ Our code references:
 - [CAREGNN](https://github.com/YingtongDou/CARE-GNN)
 
 - [PCGNN](https://github.com/PonderLY/PC-GNN)
+
+# Reference
+
