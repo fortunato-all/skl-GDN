@@ -1,7 +1,5 @@
 # Revisiting Attack-caused Structural Distribution Shift in Graph Anomaly Detection
-Pytorch Implementation of
-
-Revisiting Attack-caused Structural Distribution Shift in Graph Anomaly Detection
+Pytorch Implementation of our TKDE 2024 paper: [Revisiting Attack-caused Structural Distribution Shift in Graph Anomaly Detection](https://ieeexplore.ieee.org/abstract/document/10478154)
 
 # Overview
 Our [preliminary version](https://github.com/blacksingular/wsdm_GDN) observe that the heterophily degree is different across the training and test environments in GAD, leading to the poor generalization of the classifier, which is called structural distribution shift. We use GDN to solve this SDS problem from a feature view in our previous work.
