@@ -45,9 +45,11 @@ Our code references:
 - [PCGNN](https://github.com/PonderLY/PC-GNN)
 
 # Reference
+```
 @inproceedings{gao2024revisiting,
   title = {Revisiting Attack-caused Structural Distribution Shift in Graph Anomaly Detection},
   author = {Gao, Yuan and Li, Jinghan and Wang, Xiang and He, Xiangnan and Feng, Huamin and Zhang, Yongdong},
   booktitle = {In Transactions on Knowledge and Data Engineering},
   year = {2024}
 }
+```
